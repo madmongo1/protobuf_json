@@ -2,9 +2,43 @@ syntax = "proto3";
 
 package test;
 
+message Exception
+{
+    string what = 1;
+    string name = 2;
+    Exception nested = 3;
+}
+
+
+service signup
+{
+    
+}
+
+option cc_generic_services = true;
+option cc_enable_arenas = true;
+
+message Bar
+{
+    int64 aaa = 1;
+    
+};
+
 message Foo
 {
 	int32 bar = 1;
 	string baz = 2;
+    Foo next_foo = 3;
+    repeated int32 values = 6;
+    repeated Bar bars = 7;
+    oneof batch {
+        Foo another_foo = 4;
+        Bar another_bar = 5;
+    }
 }
 
+service test_service
+{
+    rpc foo_mee (Foo) returns (Bar);
+    rpc foo_failure (Foo) returns (Bar);
+}

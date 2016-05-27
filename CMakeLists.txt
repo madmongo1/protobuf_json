@@ -14,9 +14,15 @@ project (protobuf_json CXX)
 
 sanity_require(LIBRARY protobuf VERSION any)
 
-protobuf_configure_files (FILES test.proto CPP CPP_HEADERS proto_hdrs CPP_SOURCES proto_srcs)
+set(PROTO_FILES test.proto)
+protobuf_configure_files (FILES ${PROTO_FILES} CPP CPP_HEADERS proto_hdrs CPP_SOURCES proto_srcs)
+set_property(SOURCE ${PROTO_FILES} PROPERTY HEADER_FILE_ONLY ON)
+
+set(SRCS
+main.cpp
+my_resolver.cpp my_resolver.hpp)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-add_executable(protobuf_json main.cpp ${proto_hdrs} ${proto_srcs})
+add_executable(protobuf_json ${SRCS} ${PROTO_FILES} ${proto_hdrs} ${proto_srcs})
 target_link_libraries(protobuf_json sanity::protobuf)
 
