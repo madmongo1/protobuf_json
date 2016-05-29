@@ -14,6 +14,7 @@
 #include "test.pb.h"
 #include "my_resolver.hpp"
 
+#include <boost/algorithm/string.hpp>
 
 test::Foo* populate(test::Foo* foo, int bar, std::string baz)
 {
@@ -299,6 +300,10 @@ struct service_factory
 
 struct simple_rpc_controller : google::protobuf::RpcController
 {
+    simple_rpc_controller(std::function<void()> handler = nullptr)
+    : _handler(handler)
+    {}
+    
     void Reset() override {
         _failed = false;
         _cancelled = false;
@@ -337,13 +342,15 @@ struct simple_rpc_controller : google::protobuf::RpcController
     {
         _cancel_closure.reset(closure);
     }
-
+    
 private:
     bool _failed = false;
     std::string _error_message;
     
     bool _cancelled = false;
     std::unique_ptr<google::protobuf::Closure> _cancel_closure;
+    
+    std::function<void()> _handler;
 };
 
 struct sync_call_closure : google::protobuf::Closure
@@ -392,12 +399,49 @@ execute_json(const service_factory& factory,
         response_ptr = error_msg;
     }
     
-    
-    
-    
-    
     return std::make_pair(response_ptr->GetDescriptor()->full_name(), as_json(*response_ptr));
 }
+
+#include <future>
+
+struct async_execution_handle
+{
+    struct impl {
+        std::uint_fast64_t _ident;
+        
+        
+    };
+    std::shared_ptr<impl> _impl;
+};
+
+
+struct async_invoke_context : google::protobuf::Closure
+{
+    async_invoke_context()
+    {
+        
+    }
+    
+    auto controller() { return std::addressof(_controller); }
+    auto rpc_closure() { return this; }
+    
+    //
+    // Closure interface
+    //
+    
+    void Run() override
+    {
+//        handle_completion()
+    }
+    
+    simple_rpc_controller _controller;
+    
+    
+};
+
+
+
+
 
 int main()
 {

@@ -13,6 +13,7 @@ include (sanity/cmake/sanity.cmake)
 project (protobuf_json CXX)
 
 sanity_require(LIBRARY protobuf VERSION any)
+sanity_require(LIBRARY boost VERSION any)
 
 set(PROTO_FILES test.proto)
 protobuf_configure_files (FILES ${PROTO_FILES} CPP CPP_HEADERS proto_hdrs CPP_SOURCES proto_srcs)
@@ -24,5 +25,5 @@ my_resolver.cpp my_resolver.hpp)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_executable(protobuf_json ${SRCS} ${PROTO_FILES} ${proto_hdrs} ${proto_srcs})
-target_link_libraries(protobuf_json sanity::protobuf)
+target_link_libraries(protobuf_json sanity::protobuf boost)
 
